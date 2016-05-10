@@ -16,7 +16,6 @@ for( component in components ) {
     createDeployJob( component.productName, component.scmProject , env)
   }
   createBuildJob( component )
-  createUCDComponent(component.productName)
 }
 
 def createDeployJob(productName, projectName, environment) {
