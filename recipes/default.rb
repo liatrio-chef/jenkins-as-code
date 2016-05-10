@@ -1,10 +1,8 @@
 #
-# Cookbook Name:: apache2-liatrio
+# Cookbook Name:: jenkins-as-code
 # Recipe:: default
-#
-# Copyright 2016, YOUR_COMPANY_NAME
 #
 # All rights reserved - Do Not Redistribute
 #
 
-include_recipe 'apache2'
+include_recipe 'jenkins-liatrio'
