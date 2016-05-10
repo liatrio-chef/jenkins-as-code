@@ -1,0 +1,10 @@
+{
+ "components": [
+   {
+      "scmProject": "liatrio",
+      "productName": "spring-petclinic",
+      "deploymentEnvironments": ["dev"],
+      "ciEnvironments": ["dev"]
+   }
+ ]
+}
