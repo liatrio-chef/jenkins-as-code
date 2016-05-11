@@ -55,7 +55,7 @@ def createBuildJob(component) {
     goals("clean package")
      postBuildSteps('SUCCESS') {
       environmentVariables {
-        propertiesFile('propsfile')
+        //propertiesFile('propsfile') Add propertiesFile when available
       }
       if(downStreamJobs) {
         downstreamParameterized {
