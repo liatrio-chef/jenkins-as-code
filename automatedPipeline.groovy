@@ -21,8 +21,7 @@ for( component in components ) {
 def createDeployJob(productName, projectName, environment) {
   def deployJobName = createDeployJobName(projectName, productName, environment)
   job(deployJobName) {
-    description("<h2>This job was created with automation.  Manual edits to this job are discouraged.</h2> ")
-
+    description("<h3>This job was created by automation.  Manual edits to this job are discouraged.</h3> ")
     steps {
       label('master')
     }
@@ -44,7 +43,7 @@ def createBuildJob(component) {
     downStreamJobs.add( createDeployJobName(component.scmProject, component.productName, env) )
 
   mavenJob(buildJobName) {
-    description("<h2>This job was created with automation.  Manual edits to this job are discouraged.</h2> ")
+    description("<h3>This job was created with automation.  Manual edits to this job are discouraged.</h3> ")
     label('master')
     scm {
       git(gitUrl, branch)
@@ -53,7 +52,7 @@ def createBuildJob(component) {
       scm('H/2 * * * *')
     }
     mavenInstallation('maven 3')
-    goals("clean deploy")
+    goals("clean package")
      postBuildSteps('SUCCESS') {
       environmentVariables {
         propertiesFile('propsfile')
