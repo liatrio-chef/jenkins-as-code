@@ -5,7 +5,9 @@ import groovy.json.*
 
 DEV_BOX = "true"
 GIT_API = "https://api.github.com/repos/"
-GIT_URL= "https://github.com/"
+GIT_URL = "https://github.com/"
+GIT_AUTH_TOKEN = "USE DEV TOKEN"
+
 String fileName = "buildDeployPipelines.json"
 def file = readFileFromWorkspace(fileName)
 def inputJson = new JsonSlurper().parseText(file)
@@ -39,9 +41,16 @@ def createDeployJobName(projectName, productName , environment) {
 }
 
 def getBranches(branchApi) {
-  def auth = "ca5150b27ad3138cf12c6a5e9c24dd5b88b926b5"
+  def auth = GIT_AUTH_TOKEN
   def json = new JsonSlurper()
-  return json.parse(branchApi.toURL().newReader(requestProperties: ["Authorization": "token ${auth}".toString(), "Accept": "application/json"]))
+  if (!DEV_BOX)
+  {
+    return json.parse(branchApi.toURL().newReader(requestProperties: ["Authorization": "token ${auth}".toString(), "Accept": "application/json"]))
+  }
+  else
+  {
+    return json.parse(branchApi.toURL().newReader())
+  }
 }
 
 def createBuildJob(component) {
