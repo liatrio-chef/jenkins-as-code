@@ -2,11 +2,12 @@ import groovy.json.JsonSlurper
 import java.io.FileReader;
 import java.nio.file.*
 import groovy.json.*
+import groovy.runtime.*;
 
-DEV_BOX = "true"
+DEV_BOX = true
 GIT_API = "https://api.github.com/repos/"
 GIT_URL = "https://github.com/"
-GIT_AUTH_TOKEN = "USE DEV TOKEN"
+GIT_AUTH_TOKEN = null
 
 String fileName = "buildDeployPipelines.json"
 def file = readFileFromWorkspace(fileName)
@@ -43,7 +44,7 @@ def createDeployJobName(projectName, productName , environment) {
 def getBranches(branchApi) {
   def auth = GIT_AUTH_TOKEN
   def json = new JsonSlurper()
-  if (!DEV_BOX)
+  if (auth != null)
   {
     return json.parse(branchApi.toURL().newReader(requestProperties: ["Authorization": "token ${auth}".toString(), "Accept": "application/json"]))
   }
@@ -78,10 +79,15 @@ def createBuildJob(component) {
               scm('H/2 * * * *')
             }
             mavenInstallation('maven 3')
-            goals("clean deploy")
-             postBuildSteps('SUCCESS') {
 
-              if(downStreamJobs && (branchName == "master")) {
+            if ( branchName == "master" )
+              goals("clean deploy")
+            else
+              goals("clean install")
+
+            postBuildSteps('SUCCESS') {
+
+            if( downStreamJobs && branchName == "master" ) {
                 downstreamParameterized {
                   trigger(downStreamJobs.join(", ")) {
                   }
