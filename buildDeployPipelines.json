@@ -1,8 +1,18 @@
 {
  "components": [
    {
+      "scmProject": "capitalone",
+      "productName": "Hygieia"
+   },
+   {
       "scmProject": "liatrio",
-      "productName": "spring-petclinic",
+      "productName": "Hygieia",
+      "deploymentEnvironments": ["dev"],
+      "ciEnvironments": ["dev"]
+   },
+   {
+      "scmProject": "liatrio",
+      "productName": "theia-ui",
       "deploymentEnvironments": ["dev"],
       "ciEnvironments": ["dev"]
    }
