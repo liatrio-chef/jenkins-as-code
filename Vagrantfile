@@ -19,7 +19,7 @@ Vagrant.configure(2) do |config|
       },
       "jenkins_liatrio" => {
         "install_plugins" => {
-           "plugins_list" => %w{git github job-dsl envinject parameterized-trigger}
+           "plugins_list" => %w{git github job-dsl envinject parameterized-trigger cloudbees-folder}
         }
       }
     }
