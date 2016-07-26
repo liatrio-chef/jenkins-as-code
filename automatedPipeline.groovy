@@ -7,7 +7,7 @@ import groovy.runtime.*;
 DEV_BOX = true // DEV_BOX disables all generated jobs by default
 GIT_API = "https://api.github.com/repos/"
 GIT_URL = "https://github.com/"
-GIT_AUTH_TOKEN = "empty"
+GIT_AUTH_TOKEN = "${GIT_AUTH_TOKEN}" //Add an environment variable in Jenkins called GIT_AUTH_TOKEN
 USE_FOLDERS = true //Assumes you're using the Folders plugin
 
 String fileName = "buildDeployPipelines.json"
