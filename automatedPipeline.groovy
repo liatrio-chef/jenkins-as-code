@@ -4,11 +4,41 @@ import java.nio.file.*
 import groovy.json.*
 import groovy.runtime.*;
 
+USE_FOLDERS = true //Feature flag which assumes you're using the Folders plugin - false disables it and displays all jobs at top level
+DEV_BOX = getDevBoxVariable() //Add the evironment variable "${DEV_BOX}"
+GIT_AUTH_TOKEN = getGitAuthTokenVariable()//Add the environment variable "${GIT_AUTH_TOKEN}" - Required for private repos
 GIT_API = "https://api.github.com/repos/"
-GIT_URL = "https://github.com/"
-USE_FOLDERS = true //Assumes you're using the Folders plugin
-DEV_BOX = true //Add the evironment variable "${DEV_BOX}"
-GIT_AUTH_TOKEN = ""//Add the environment variable "${GIT_AUTH_TOKEN}"
+GIT_URL = getGitUrl() //Build the URL based on the auth token if provided
+
+boolean getDevBoxVariable() {
+  try {
+    out.println("DEV_BOX environment variable = " + "${DEV_BOX}")
+    def devBox = "${DEV_BOX}"
+    return devBox.toBoolean()
+  }
+  catch (Exception ex) {
+    out.println("Environment variable not found for DEV_BOX")
+    return true // Defaulting to a DEV_BOX to keep the builds and deployments disabled locally
+  }
+}
+
+def getGitAuthTokenVariable() {
+  try {
+    return "${GIT_AUTH_TOKEN}"
+  }
+  catch (Exception ex) {
+    out.println("Environment variable not found for GIT_AUTH_TOKEN")
+    return "NO_AUTH"
+  }
+}
+
+def getGitUrl() {
+  if (GIT_AUTH_TOKEN.size() > 10)
+  {
+    return "https://"+GIT_AUTH_TOKEN+"@github.com/"
+  }
+  return "https://github.com/"
+}
 
 String fileName = "buildDeployPipelines.json"
 def file = readFileFromWorkspace(fileName)
@@ -33,13 +63,13 @@ for( component in components ) {
 def createFolders(project, product)
 {
   def productPath = project + "/" + product
-  try{
+  try {
     def createProjectFolder = folder(project)
     def createProductFolder = folder(productPath)
     def createProductBuildsFolder = folder(productPath + "/builds")
     def createProductDeploymentsFolder = folder(productPath + "/deployments")
   }
-  catch (Exception exception){
+  catch (Exception exception) {
     return false
   }
   return true
@@ -75,27 +105,23 @@ def getBranches(branchApi) {
   def auth = GIT_AUTH_TOKEN
   def json = new JsonSlurper()
 
-  if (auth.size() > 10) //Just looking for something that looks real
+  if (auth.size() > 20) //Just looking for something that looks real
   {
     out.println("The git auth token was provided.  Using it...")
-    try
-    {
+    try {
       return json.parse(branchApi.toURL().newReader(requestProperties: ["Authorization": "token ${auth}".toString(), "Accept": "application/json"]))
     }
-    catch (Exception ex)
-    {
+    catch (Exception ex) {
       out.println(ex)
       return null //API request failed
     }
   }
   else
   {
-    try
-    {
+    try {
       return json.parse(branchApi.toURL().newReader())
     }
-    catch (Exception ex)
-    {
+    catch (Exception ex) {
       out.println(ex)
       out.println("Auth likely failed - Provide an api key if repository is private.")
       return null //API request failed
@@ -107,6 +133,7 @@ def createBuildJob(component) {
   String productPath = component.scmProject + "/" + component.productName
   String branchApi =  GIT_API + productPath + "/branches"
   String repoUrl = GIT_URL + productPath
+
   def ciEnvironments = component.ciEnvironments
   def downStreamJobs = []
 
@@ -120,13 +147,12 @@ def createBuildJob(component) {
         def branchName = it.name
         def jobName = "${component.scmProject}-${component.productName}-${branchName}-build".replaceAll('/','-').toLowerCase()
         def jobLocation = ""
-        if (USE_FOLDERS)
-        {
+        if (USE_FOLDERS) {
           jobLocation = productPath + "/builds/"
         }
         out.println("Creating or updating job " + jobLocation )
         mavenJob(jobLocation + jobName) {
-            if(DEV_BOX)
+            if(DEV_BOX == true)
             {
               disabled()
             }
