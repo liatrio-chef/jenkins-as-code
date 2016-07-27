@@ -1,10 +1,6 @@
 {
  "components": [
    {
-      "scmProject": "capitalone",
-      "productName": "Hygieia"
-   },
-   {
       "scmProject": "liatrio",
       "productName": "Hygieia",
       "deploymentEnvironments": ["dev"],
