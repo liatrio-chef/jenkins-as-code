@@ -4,11 +4,23 @@ import java.nio.file.*
 import groovy.json.*
 import groovy.runtime.*;
 
-USE_FOLDERS = true //Feature flag which assumes you're using the Folders plugin - false disables it and displays all jobs at top level
+USE_FOLDERS = getFoldersVariable() //Feature flag which assumes you're using the Folders plugin - false disables it and displays all jobs at top level
 DEV_BOX = getDevBoxVariable() //Add the evironment variable "${DEV_BOX}"
 GIT_AUTH_TOKEN = getGitAuthTokenVariable()//Add the environment variable "${GIT_AUTH_TOKEN}" - Required for private repos
 GIT_API = "https://api.github.com/repos/"
 GIT_URL = getGitUrl() //Build the URL based on the auth token if provided
+
+boolean getFoldersVariable() {
+  try {
+    out.println("USE_FOLDERS environment variable = " + "${USE_FOLDERS}")
+    def useFolders = "${USE_FOLDERS}"
+    return useFolders.toBoolean()
+  }
+  catch (Exception ex) {
+    out.println("Environment variable not found for USE_FOLDERS.  Defaulting to standard job list")
+    return false // Defaulting to no FOLDERS
+  }
+}
 
 boolean getDevBoxVariable() {
   try {
@@ -137,8 +149,14 @@ def createBuildJob(component) {
   def ciEnvironments = component.ciEnvironments
   def downStreamJobs = []
 
-  for(env in ciEnvironments)
-    downStreamJobs.add( createDeployJobName(component.scmProject, component.productName, env) )
+  for(env in ciEnvironments) {
+    if (USE_FOLDERS) {
+      downStreamJobs.add("../deployments/" + createDeployJobName(component.scmProject, component.productName, env))
+    }
+    else {
+      downStreamJobs.add(createDeployJobName(component.scmProject, component.productName, env))
+    }
+  }
 
   def branches = getBranches(branchApi)
   if (branches)
@@ -171,15 +189,13 @@ def createBuildJob(component) {
               goals("clean install")
 
             postBuildSteps('SUCCESS') {
-
-            if( downStreamJobs && branchName == "master" ) {
+              if( downStreamJobs && branchName == "master" ) {
                 downstreamParameterized {
-                  trigger(downStreamJobs.join(", ")) {
-                  }
+                  trigger(downStreamJobs.join(", "))
                 }
               }
             }
-        }
+          }
       return jobName
     }
   }
