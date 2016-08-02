@@ -184,7 +184,7 @@ def createBuildJob(component) {
             mavenInstallation('maven 3')
 
             if ( branchName == "master" )
-              goals("clean deploy")
+              goals("clean install")
             else
               goals("clean install")
 
