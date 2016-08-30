@@ -11,6 +11,12 @@
       "productName": "theia-ui",
       "deploymentEnvironments": ["dev"],
       "ciEnvironments": ["dev"]
+   },
+   {
+      "scmProject": "liatrio",
+      "productName": "game-of-life",
+      "deploymentEnvironments": ["dev"],
+      "ciEnvironments": ["dev"]
    }
  ]
 }
