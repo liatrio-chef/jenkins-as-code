@@ -2,3 +2,5 @@ NumericLiterals:
   Enabled: false
 Metrics/LineLength:
   Max: 10000
+Lint/RequireParentheses:
+  Enabled: false

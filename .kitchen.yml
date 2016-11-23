@@ -2,13 +2,17 @@
 driver:
   name: docker
   use_sudo: false
+  require_chef_omnibus: 12.16.42
+
+  # XXX consider adding a docker container with chef-client already installed
+  # require_chef_omnibus: false
+  # provision_command: curl -L https://www.opscode.com/chef/install.sh | bash
 
 platforms:
   - name: centos-6.8
 
 suites:
-  - name: hygieia-liatrio
-    encrypted_data_bag_secret_key_path: "test/integration/default/encrypted_data_bag_secret"
+  - name: jenkins-liatrio
     run_list:
       - recipe[yum-epel::default]
       - recipe[jenkins-as-code::default]
