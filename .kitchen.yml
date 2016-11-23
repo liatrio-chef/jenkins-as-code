@@ -11,8 +11,7 @@ suites:
     encrypted_data_bag_secret_key_path: "test/integration/default/encrypted_data_bag_secret"
     run_list:
       - recipe[yum-epel::default]
-      - recipe[jenkins-liatrio::default]
-      - recipe[jenkins-liatrio::plugin_maven]
+      - recipe[jenkins-as-code::default]
     attributes:
       java:
         jdk_version: "8"
