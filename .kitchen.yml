@@ -12,6 +12,7 @@ suites:
     run_list:
       - recipe[yum-epel::default]
       - recipe[jenkins-as-code::default]
+      - recipe[jenkins-as-code::create_jobs]
     attributes:
       java:
         jdk_version: "8"
