@@ -1,10 +1,17 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# ensure berkshelf and hostupdate are installed
+required_plugins = %w(vagrant-berkshelf vagrant-hostsupdater)
+required_plugins.each do |plugin|
+  exec "vagrant plugin install #{plugin};vagrant #{ARGV.join(' ')}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
+end
+
 Vagrant.configure(2) do |config|
   config.vm.box = 'bento/centos-7.2'
 
   config.berkshelf.enabled = true
+
   config.vm.provision 'chef_solo' do |chef|
     chef.add_recipe 'jenkins-as-code::default'
     chef.add_recipe 'jenkins-as-code::create_jobs'
@@ -32,5 +39,5 @@ Vagrant.configure(2) do |config|
     v.customize ['modifyvm', :id, '--cableconnected1', 'on'] # fix for bento box issue https://github.com/chef/bento/issues/682
   end
 
-  #config.vm.provision 'shell', inline: 'firewall-cmd --permanent --add-port=8080/tcp && firewall-cmd --reload'
+  # config.vm.provision 'shell', inline: 'firewall-cmd --permanent --add-port=8080/tcp && firewall-cmd --reload'
 end
