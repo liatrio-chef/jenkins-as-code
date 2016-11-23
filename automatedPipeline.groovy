@@ -185,8 +185,8 @@ def createBuildJob(component) {
             }
             publishers {
                 s3('drew') {
-                    entry('foo', 'bar', 'us-west-2') {
-                      storageClass('REDUCED_REDUNDANCY')
+                    entry('*/target/*.jar,*UI/dist/**', 'build.liatrio.com', 'us-west-2') {
+                      storageClass('STANDARD')
                       noUploadOnFailure()
                       uploadFromSlave()
                     }
