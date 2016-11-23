@@ -184,6 +184,13 @@ def createBuildJob(component) {
               githubPush()
             }
             publishers {
+                s3('drew') {
+                    entry('foo', 'bar', 'us-west-2') {
+                      storageClass('REDUCED_REDUNDANCY')
+                      noUploadOnFailure()
+                      uploadFromSlave()
+                    }
+                }
                 slackNotifier {
                     notifyFailure(true)
                     notifySuccess(true)
@@ -192,7 +199,7 @@ def createBuildJob(component) {
                     notifyUnstable(false)
                     notifyBackToNormal(true)
                     notifyRepeatedFailure(false)
-                    startNotification(false)
+                    startNotification(true)
                     includeTestSummary(true)
                     includeCustomMessage(false)
                     customMessage(null)
