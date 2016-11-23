@@ -58,13 +58,14 @@ def inputJson = new JsonSlurper().parseText(file)
 
 def components =  inputJson.components
 for( component in components ) {
+
   if (USE_FOLDERS)
   {
     USE_FOLDERS = createFolders(component.scmProject, component.productName)
     out.println("Using folders = " + USE_FOLDERS)
     //should be true if the plugin exists
   }
-
+  
   def deploymentEnvironments = component.deploymentEnvironments
   for(env in deploymentEnvironments) {
     createDeployJob(component.productName, component.scmProject, env)
@@ -105,6 +106,37 @@ def createDeployJob(productName, projectName, environment) {
     steps {
       label('master')
     }
+    publishers {
+        s3('drew') {
+            entry('*/target/*.jar,*UI/dist/**', 'build.liatrio.com', 'us-west-2') {
+              storageClass('STANDARD')
+              noUploadOnFailure()
+              uploadFromSlave()
+            }
+        }
+        slackNotifier {
+            notifyFailure(true)
+            notifySuccess(true)
+            notifyAborted(false)
+            notifyNotBuilt(false)
+            notifyUnstable(false)
+            notifyBackToNormal(true)
+            notifyRepeatedFailure(false)
+            startNotification(true)
+            includeTestSummary(true)
+            includeCustomMessage(false)
+            customMessage(null)
+            buildServerUrl(null)
+            sendAs(null)
+            commitInfoChoice('AUTHORS_AND_TITLES')
+            teamDomain(null)
+            authToken(null)
+            room('jenkins-build')
+        }
+        mailer('drew@liatrio.com', true, true)
+        githubCommitNotifier()
+    }
+
   }
   return deployJobName
 }
@@ -184,13 +216,6 @@ def createBuildJob(component) {
               githubPush()
             }
             publishers {
-                s3('drew') {
-                    entry('*/target/*.jar,*UI/dist/**', 'build.liatrio.com', 'us-west-2') {
-                      storageClass('STANDARD')
-                      noUploadOnFailure()
-                      uploadFromSlave()
-                    }
-                }
                 slackNotifier {
                     notifyFailure(true)
                     notifySuccess(true)
