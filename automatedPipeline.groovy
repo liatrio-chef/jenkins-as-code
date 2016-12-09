@@ -134,7 +134,7 @@ def createDeployJob(productName, projectName, environment) {
             authToken(null)
             room('jenkins-build')
         }
-        mailer('drew@liatrio.com', true, true)
+        //mailer('drew@liatrio.com', true, true)
         githubCommitNotifier()
     }
 
@@ -236,7 +236,7 @@ def createBuildJob(component) {
                     authToken(null)
                     room('jenkins-build')
                 }
-                mailer('drew@liatrio.com', true, true)
+                //mailer('drew@liatrio.com', true, true)
                 githubCommitNotifier()
             }
             mavenInstallation('maven 3')
