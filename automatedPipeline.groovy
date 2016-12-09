@@ -112,6 +112,7 @@ def createDeployJob(productName, projectName, environment) {
               storageClass('STANDARD')
               noUploadOnFailure()
               uploadFromSlave()
+              managedArtifacts(true)
             }
         }
         slackNotifier {
